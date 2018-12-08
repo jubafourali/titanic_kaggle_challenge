@@ -1,0 +1,13 @@
+Pandas
+lightfm
+tweepy
+cycler==0.10.0
+matplotlib==1.5.3
+pyparsing==2.1.10
+python-dateutil==2.5.3
+pytz==2016.7
+numpy
+scipy
+scikit-learn
+six
+seaborn
