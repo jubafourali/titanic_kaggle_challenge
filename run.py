@@ -73,15 +73,15 @@ class TitanicChallenge:
     def analyse_by_pivoting_data(self):
 
         # Survived by Pclass
-        print(titanic.data_train_df[['Pclass', 'Survived']].groupby(['Pclass'], as_index=False).mean().sort_values(
+        print(self.data_train_df[['Pclass', 'Survived']].groupby(['Pclass'], as_index=False).mean().sort_values(
             by='Survived', ascending=False))
 
         # Survived by Age
-        print(titanic.data_train_df[['Age', 'Survived']].groupby(['Age'], as_index=False).mean().sort_values(
+        print(self.data_train_df[['Age', 'Survived']].groupby(['Age'], as_index=False).mean().sort_values(
             by='Survived', ascending=False))
 
         # Survived by Sex
-        print(titanic.data_train_df[['Sex', 'Survived']].groupby(['Sex'], as_index=False).mean().sort_values(
+        print(self.data_train_df[['Sex', 'Survived']].groupby(['Sex'], as_index=False).mean().sort_values(
             by='Survived', ascending=False))
 
         # Survived by Parch
