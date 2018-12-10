@@ -1,6 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+import numpy as np
 
 
 class TitanicChallenge:
@@ -126,6 +127,14 @@ class TitanicChallenge:
 
         plt.show()
 
+    # --------------------------- wrangle data ----------------------------
+    def correcting_by_dropping_features(self):
+        print("Before", self.data_train_df.shape, self.data_test_df.shape, self.combined_data[0].shape, self.combined_data[1])
+        self.data_train_df = self.data_train_df.drop(['Ticket', 'Cabin'], axis=1)
+        self.combined_data = [self.data_train_df, self.data_test_df]
+        print("After", self.data_train_df.shape, self.data_test_df.shape, self.combined_data[0].shape, self.combined_data[1])
+
+
 if __name__ == '__main__':
 
     titanic = TitanicChallenge()
@@ -133,3 +142,4 @@ if __name__ == '__main__':
     titanic.analyse_by_describing_data()
     titanic.analyse_by_pivoting_data()
     titanic.analyse_by_visualizing_data()
+    titanic.correcting_by_dropping_features()
