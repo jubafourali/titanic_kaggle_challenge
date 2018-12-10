@@ -1,4 +1,6 @@
 import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 
 class TitanicChallenge:
@@ -88,9 +90,46 @@ class TitanicChallenge:
         print(self.data_train_df[["Parch", "Survived"]].groupby(['Parch'], as_index=False).mean().sort_values(
             by='Survived', ascending=False))
 
+    def analyse_by_visualizing_data(self):
+        # --------------------- Correlating numerical features -------------------
+        # Survived by age
+        survived_fg = sns.FacetGrid(self.data_train_df, col='Survived')
+        survived_fg.map(plt.hist, 'Age', bins=20, color='r')
+
+        # class by age
+        survived_fg = sns.FacetGrid(self.data_train_df, col='Pclass')
+        survived_fg.map(plt.hist, 'Age', bins=20, color='r')
+        # -----> young passengers are mostly placed in Pclass 3
+
+        # ---------------------- Correlating numerical and ordinal features --------------
+        # Survived by Pclass
+        survived_fg = sns.FacetGrid(self.data_train_df, col='Survived')
+        survived_fg.map(plt.hist, 'Pclass', bins=10, color='b')
+        # ----> passenger in class 3 mostly survived
+
+        # grid = sns.FacetGrid(train_df, col='Pclass', hue='Survived')
+        grid = sns.FacetGrid(self.data_train_df, col='Survived', row='Pclass', size=2.2, aspect=1.6)
+        grid.map(plt.hist, 'Age', alpha=.5, bins=20)
+        grid.add_legend()
+
+        # ---------------------- Correlating categorical features --------------------
+        # grid = sns.FacetGrid(train_df, col='Embarked')
+        grid = sns.FacetGrid(self.data_train_df, row='Embarked', size=2.2, aspect=1.6)
+        grid.map(sns.pointplot, 'Pclass', 'Survived', 'Sex', palette='deep')
+        grid.add_legend()
+
+        # ---------------------- Correlating categorical and numerical features ----------
+        # grid = sns.FacetGrid(train_df, col='Embarked', hue='Survived', palette={0: 'k', 1: 'w'})
+        grid = sns.FacetGrid(self.data_train_df, row='Embarked', col='Survived', size=2.2, aspect=1.6)
+        grid.map(sns.barplot, 'Sex', 'Fare', alpha=.5, ci=None)
+        grid.add_legend()
+
+        plt.show()
+
 if __name__ == '__main__':
 
     titanic = TitanicChallenge()
     titanic.get_data()
     titanic.analyse_by_describing_data()
     titanic.analyse_by_pivoting_data()
+    titanic.analyse_by_visualizing_data()
