@@ -134,12 +134,28 @@ class TitanicChallenge:
         self.combined_data = [self.data_train_df, self.data_test_df]
         print("After", self.data_train_df.shape, self.data_test_df.shape, self.combined_data[0].shape, self.combined_data[1])
 
+    def correcting_by_creating_new_features(self):
+        # will be seen later
+        pass
+
+    def converting_categorical_features(self):
+        # conversion of features which contain strings to numerical values is required by most model algorithms
+        for dataset in self.combined_data:
+            dataset['Sex'] = dataset['Sex'].map(
+                {
+                    'female': 1,
+                    'male': 0
+                }
+            ).astype(int)
+        print(self.data_train_df.head())
+
 
 if __name__ == '__main__':
 
     titanic = TitanicChallenge()
     titanic.get_data()
-    titanic.analyse_by_describing_data()
-    titanic.analyse_by_pivoting_data()
-    titanic.analyse_by_visualizing_data()
+    # titanic.analyse_by_describing_data()
+    # titanic.analyse_by_pivoting_data()
+    # titanic.analyse_by_visualizing_data()
     titanic.correcting_by_dropping_features()
+    titanic.converting_categorical_features()
