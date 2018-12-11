@@ -149,6 +149,48 @@ class TitanicChallenge:
             ).astype(int)
         print(self.data_train_df.head())
 
+    def completing_a_numerical_continuous_feature(self):
+        guess_ages = np.zeros((2, 3))
+        for dataset in self.combined_data:
+            for i in range(0, 2):
+                for j in range(0, 3):
+                    guess_df = dataset[(dataset['Sex'] == i) & \
+                                       (dataset['Pclass'] == j + 1)]['Age'].dropna()
+
+                    age_guess = guess_df.median()
+                    # Convert random age float to nearest .5 age
+                    guess_ages[i, j] = int(age_guess / 0.5 + 0.5) * 0.5
+
+            for i in range(0, 2):
+                for j in range(0, 3):
+                    dataset.loc[(dataset.Age.isnull()) & (dataset.Sex == i) & (dataset.Pclass == j + 1), \
+                                'Age'] = guess_ages[i, j]
+
+            dataset['Age'] = dataset['Age'].astype(int)
+
+        print(self.data_train_df.head())
+
+        # create age brands and determine correlations with Survived
+        # Bin age values into 5 discrete intervals
+        self.data_train_df['AgeBrand'] = pd.cut(self.data_train_df['Age'], 5)
+        # compute values of each Age mark, value of each mark is the mean of corresponding values
+        self.data_train_df[['AgeBrand', 'Survived']].groupby(['AgeBrand'], as_index=False).mean().sort_values(
+            by='AgeBrand', ascending=True)
+
+        print(self.data_train_df)
+
+        for dataset in self.combined_data:
+            dataset.loc[dataset['Age'] <= 16, 'Age'] = 0
+            dataset.loc[(dataset['Age'] > 16) & (dataset['Age'] <= 32), 'Age'] = 1
+            dataset.loc[(dataset['Age'] > 32) & (dataset['Age'] <= 48), 'Age'] = 2
+            dataset.loc[(dataset['Age'] > 48) & (dataset['Age'] <= 64), 'Age'] = 3
+            dataset.loc[dataset['Age'] > 64, 'Age'] = 4
+        self.data_train_df.head()
+
+        # drop AgeBrand feature
+        self.data_train_df = self.data_train_df.drop(['AgeBrand'], axis=1)
+        print(self.data_train_df.head())
+
 
 if __name__ == '__main__':
 
@@ -159,3 +201,4 @@ if __name__ == '__main__':
     # titanic.analyse_by_visualizing_data()
     titanic.correcting_by_dropping_features()
     titanic.converting_categorical_features()
+    titanic.completing_a_numerical_continuous_feature()
