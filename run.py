@@ -191,6 +191,31 @@ class TitanicChallenge:
         self.data_train_df = self.data_train_df.drop(['AgeBrand'], axis=1)
         print(self.data_train_df.head())
 
+    def creating_new_features_from_existing_ones(self):
+        # create family size feature
+        for dataset in self.combined_data:
+            # "1" at the end represent the person in the row
+            dataset['FamilySize'] = dataset['SibSp'] + dataset['Parch'] + 1
+
+        self.data_train_df = self.combined_data[0]
+        self.data_test_df = self.combined_data[1]
+
+        familysize_survived = self.data_train_df[['FamilySize', 'Survived']].groupby(['FamilySize'], as_index=False).mean().sort_values(by='Survived', ascending=False)
+        print(familysize_survived)
+
+        # add "is_alone" feature
+        for dataset in self.combined_data:
+            dataset['IsAlone'] = 0
+            dataset.loc[dataset['FamilySize'] == 1, 'IsAlone'] = 1
+
+        self.data_train_df[['IsAlone', 'Survived']].groupby(['IsAlone'], as_index=False).mean()
+
+        # drop 'Parch', 'SibSp', 'FamilySize' features
+        train_df = self.data_train_df.drop(['Parch', 'SibSp', 'FamilySize'], axis=1)
+        test_df = self.data_test_df.drop(['Parch', 'SibSp', 'FamilySize'], axis=1)
+        combine = [train_df, test_df]
+
+        train_df.head()
 
 if __name__ == '__main__':
 
@@ -202,3 +227,4 @@ if __name__ == '__main__':
     titanic.correcting_by_dropping_features()
     titanic.converting_categorical_features()
     titanic.completing_a_numerical_continuous_feature()
+    titanic.creating_new_features_from_existing_ones()
