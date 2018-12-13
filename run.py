@@ -237,6 +237,28 @@ class TitanicChallenge:
             dataset['Embarked'] = dataset['Embarked'].map({'S': 0, 'C': 1, 'Q': 2}).astype(int)
             print(dataset.head())
 
+    def completing_and_converting_fare_numeric_feature(self):
+        for dataset in self.combined_data:
+            dataset['Fare'].fillna(dataset['Fare'].dropna().median(), inplace=True)
+            dataset.head()
+
+        self.data_train_df['FareBand'] = pd.qcut(self.data_train_df['Fare'], 4)
+        self.data_train_df[['FareBand', 'Survived']].groupby(['FareBand'], as_index=False).mean().sort_values(by='FareBand',
+                                                                                                   ascending=True)
+        for dataset in self.combined_data:
+
+            dataset.loc[dataset['Fare'] <= 7.91, 'Fare'] = 0
+            dataset.loc[(dataset['Fare'] > 7.91) & (dataset['Fare'] <= 14.454), 'Fare'] = 1
+            dataset.loc[(dataset['Fare'] > 14.454) & (dataset['Fare'] <= 31), 'Fare'] = 2
+            dataset.loc[dataset['Fare'] > 31, 'Fare'] = 3
+            dataset['Fare'] = dataset['Fare'].astype(int)
+
+        self.data_train_df = self.data_train_df.drop(['FareBand'], axis=1)
+        self.combined_data = [self.data_test_df, self.data_test_df]
+
+        print(self.data_train_df.head(10))
+        print(self.data_train_df.head(10))
+
 
 if __name__ == '__main__':
 
@@ -251,3 +273,4 @@ if __name__ == '__main__':
     titanic.creating_new_features_from_existing_ones()
     titanic.completing_embarked_categorical_feature()
     titanic.converting_embarked_categorical_feature_to_numeric()
+    titanic.completing_and_converting_fare_numeric_feature()
