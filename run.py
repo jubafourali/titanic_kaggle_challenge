@@ -131,6 +131,8 @@ class TitanicChallenge:
     def correcting_by_dropping_features(self):
         print("Before", self.data_train_df.shape, self.data_test_df.shape, self.combined_data[0].shape, self.combined_data[1])
         self.data_train_df = self.data_train_df.drop(['Ticket', 'Cabin'], axis=1)
+        self.data_test_df = self.data_test_df.drop(['Ticket', 'Cabin'], axis=1)
+
         self.combined_data = [self.data_train_df, self.data_test_df]
         print("After", self.data_train_df.shape, self.data_test_df.shape, self.combined_data[0].shape, self.combined_data[1])
 
@@ -208,14 +210,33 @@ class TitanicChallenge:
             dataset['IsAlone'] = 0
             dataset.loc[dataset['FamilySize'] == 1, 'IsAlone'] = 1
 
-        self.data_train_df[['IsAlone', 'Survived']].groupby(['IsAlone'], as_index=False).mean()
+        is_alone_survived = self.data_train_df[['IsAlone', 'Survived']].groupby(['IsAlone'], as_index=False).mean()
+        print(is_alone_survived)
 
         # drop 'Parch', 'SibSp', 'FamilySize' features
-        train_df = self.data_train_df.drop(['Parch', 'SibSp', 'FamilySize'], axis=1)
-        test_df = self.data_test_df.drop(['Parch', 'SibSp', 'FamilySize'], axis=1)
-        combine = [train_df, test_df]
+        self.data_train_df = self.data_train_df.drop(['Parch', 'SibSp', 'FamilySize'], axis=1)
+        self.data_test_df = self.data_test_df.drop(['Parch', 'SibSp', 'FamilySize'], axis=1)
+        self.combined_data = [self.data_train_df, self.data_test_df]
 
-        train_df.head()
+        print(self.data_train_df.head())
+
+    def completing_embarked_categorical_feature(self):
+        # find frequent appeared port in the data
+        freq_port = self.data_train_df['Embarked'].dropna().mode()[0]
+        print("most appeared port value :", freq_port)
+
+        for dataset in self.combined_data:
+            dataset['Embarked'] = dataset['Embarked'].fillna(freq_port)
+
+        print(self.data_train_df)
+        print(self.data_train_df[['Embarked', 'Survived']].groupby(['Embarked'], as_index=False).mean().\
+            sort_values(by='Survived', ascending=False))
+
+    def converting_embarked_categorical_feature_to_numeric(self):
+        for dataset in self.combined_data:
+            dataset['Embarked'] = dataset['Embarked'].map({'S': 0, 'C': 1, 'Q': 2}).astype(int)
+            print(dataset.head())
+
 
 if __name__ == '__main__':
 
@@ -228,3 +249,5 @@ if __name__ == '__main__':
     titanic.converting_categorical_features()
     titanic.completing_a_numerical_continuous_feature()
     titanic.creating_new_features_from_existing_ones()
+    titanic.completing_embarked_categorical_feature()
+    titanic.converting_embarked_categorical_feature_to_numeric()
